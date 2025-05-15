@@ -38,7 +38,7 @@ export const LIVE2D_VERSION = {
 // getPartOpacityByIndex()
 // }
 // live2d旧版cubism2的SDK只能搞到混淆以后的代码，且core的结构和cubism4的结构差别较大
-// 为了实现对cubism2的控制支持，硬生生去拿着混淆后的结构去读取数据，并仿照cubism4的结构进行了部分API的实现
+// 之前的控制逻辑是针对cubism4的，cubism2内部API差距较大，下游一个个适配太费劲了，为了实现对cubism2的控制支持，硬生生去拿着混淆后的结构去读取数据，并仿照cubism4的结构进行了部分API的实现
 const Cubism2ConfusionDict = {
   _model: "_$MT",
   parts: "_$F2",
@@ -58,45 +58,45 @@ function camelToUpperSnake(str) {
     .replace(/([A-Z])([A-Z])/g, "$1_$2")
     .toUpperCase();
 }
-export function AddCubism2Shim(model) {
-  model._parameterIds = model[C2C._model][C2C.parameters][
+export function AddCubism2Shim(coreModel) {
+  coreModel._parameterIds = coreModel[C2C._model][C2C.parameters][
     C2C.parametersInner
   ].map((param) => param[C2C.parameterID].id);
-  model._parameterMaximumValues = model[C2C._model][C2C.parameters][
+  coreModel._parameterMaximumValues = coreModel[C2C._model][C2C.parameters][
     C2C.parametersInner
   ].map((param) => param[C2C.parameterMaxValue]);
-  model._parameterMinimumValues = model[C2C._model][C2C.parameters][
+  coreModel._parameterMinimumValues = coreModel[C2C._model][C2C.parameters][
     C2C.parametersInner
   ].map((param) => param[C2C.parameterMinValue]);
-  model._partIds = model[C2C._model][C2C.parts].map(
+  coreModel._partIds = coreModel[C2C._model][C2C.parts].map(
     (part) => part[C2C.partID].id
   );
-  model.fixID = function (id) {
+  coreModel.fixID = function (id) {
     if (id.startsWith("Param")) {
       return camelToUpperSnake(id);
     } else {
       return id;
     }
   };
-
-  model.getParameterValueByIndex = function (index) {
+  // cubism2的core会自动检测你传递的是索引还是ID，所以内部都在调用统一函数
+  coreModel.getParameterValueByIndex = function (index) {
     return this.getParamFloat(index);
   };
-  model.setParameterValueByIndex = function (index, value) {
+  coreModel.setParameterValueByIndex = function (index, value) {
     this.setParamFloat(index, value);
   };
-  model.getParameterValueById = function (id) {
+  coreModel.getParameterValueById = function (id) {
     id = this.fixID(id);
     return this.getParamFloat(id);
   };
-  model.setParameterValueById = function (id, value) {
+  coreModel.setParameterValueById = function (id, value) {
     id = this.fixID(id);
     this.setParamFloat(id, value);
   };
-  model.getPartOpacityByIndex = function (index) {
+  coreModel.getPartOpacityByIndex = function (index) {
     return this.getPartOpacity(index);
   };
-  model.setPartOpacityByIndex = function (index, value) {
+  coreModel.setPartOpacityByIndex = function (index, value) {
     this.setPartsOpacity(index, value);
   };
 }
