@@ -35,4 +35,5 @@ export default {
   reload: "重载",
   launch: "启动",
   close: "关闭",
+  screenshot: "截图",
 };

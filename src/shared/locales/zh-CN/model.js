@@ -5,4 +5,5 @@ export default {
   type: "类型",
   extension: "扩展名",
   "load-selected-model": "载入选中模型",
+  version: "版本",
 };

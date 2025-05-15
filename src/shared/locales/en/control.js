@@ -35,6 +35,7 @@ export default {
     "violent-ussage-name": "Violent Usage Name",
     "spine-license":
       "accoding to spine-runtimes License, you should get the authorization before loading the spine model",
+    "sdk-version": "SDK Version",
   },
   animation: {
     "motion-db": "Motion Database",

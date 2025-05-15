@@ -35,4 +35,5 @@ export default {
   reload: "リロード",
   launch: "起動",
   close: "閉じる",
+  screenshot: "スクショ",
 };

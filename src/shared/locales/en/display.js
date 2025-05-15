@@ -35,4 +35,5 @@ export default {
   reload: "Reload",
   launch: "Launch",
   close: "Close",
+  screenshot: "Screenshot",
 };

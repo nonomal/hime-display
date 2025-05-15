@@ -234,7 +234,7 @@
           :disabled="appStore.displayWindowId === -1"
           plain
         >
-          截图
+          {{ $t("display.screenshot") }}
         </el-button>
         <el-button @click="launchDisplayWindow" plain>{{
           appStore.displayWindowId !== -1

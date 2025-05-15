@@ -5,4 +5,5 @@ export default {
   type: "Type",
   extension: "Extension",
   "load-selected-model": "Load Selected Model",
+  version: "Version",
 };

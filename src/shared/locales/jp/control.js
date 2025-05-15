@@ -36,6 +36,7 @@ export default {
     "violent-ussage-name": "暴力使い",
     "spine-license":
       "spine-runtimes Licenseによると、spineモデルをロードする前に、授权を取得するのを確認してください",
+    "sdk-version": "SDKバージョン",
   },
   animation: {
     "motion-db": "モーションデータベース",

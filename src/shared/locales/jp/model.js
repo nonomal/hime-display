@@ -5,4 +5,5 @@ export default {
   type: "ジャンル",
   extension: "拡張子",
   "load-selected-model": "選択したのモデルを読み込む",
+  version: "バージョン",
 };

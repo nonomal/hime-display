@@ -26,7 +26,11 @@
             show-overflow-tooltip
             sortable
           />
-          <el-table-column :label="'版本'" prop="name" align="center">
+          <el-table-column
+            :label="$t('model.version')"
+            prop="name"
+            align="center"
+          >
             <template #default="props">
               {{ calcModelVersion(props.row) }}
             </template>
