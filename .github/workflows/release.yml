@@ -1,6 +1,11 @@
 name: Build App
+
 on:
   workflow_dispatch:
+    inputs:
+      version:
+        description: "Version label (e.g. v1.2.3)"
+        required: false
   release:
     types: [published]
 
@@ -32,24 +37,38 @@ jobs:
           fi
         shell: bash
 
-      - name: Package build output
+      - name: Determine version
+        run: |
+          echo "VERSION=${{ github.event.release.tag_name != '' && github.event.release.tag_name || github.event.inputs.version != '' && github.event.inputs.version || 'v-dev' }}" >> $GITHUB_ENV
+        shell: bash
+
+      - name: Package build output for macOS
+        if: runner.os == 'macOS'
         run: |
           mkdir release
-          cp build/*.exe release/ 2>/dev/null || true
           cp build/*.dmg release/ 2>/dev/null || true
-          cd release && zip -r "HimeDisplay-${{ runner.os }}.zip" . && cd ..
+          cd release && zip -r "HimeDisplay-macos-${VERSION}.zip" . && cd ..
         shell: bash
+
+      - name: Package build output for Windows
+        if: runner.os == 'Windows'
+        run: |
+          mkdir release
+          copy build\*.exe release\ 2>$null
+          Compress-Archive -Path release\* -DestinationPath ("release\HimeDisplay-windows-$env:VERSION.zip")
+        shell: pwsh
 
       - name: Upload as GitHub Actions artifact
         uses: actions/upload-artifact@v4
         with:
-          name: HimeDisplay ${{ runner.os }}
-          path: release/HimeDisplay-${{ runner.os }}.zip
+          name: HimeDisplay-${{ runner.os }}-${{ env.VERSION }}
+          path: |
+            release/HimeDisplay-${{ runner.os }}-${{ env.VERSION }}.zip
 
       - name: Upload to GitHub Release (only on release)
         if: github.event_name == 'release'
         uses: softprops/action-gh-release@v2
         with:
-          files: release/HimeDisplay-${{ runner.os }}.zip
+          files: release/HimeDisplay-${{ runner.os }}-${{ env.VERSION }}.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
