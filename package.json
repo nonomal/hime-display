@@ -1,6 +1,6 @@
 {
   "name": "hime-display",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "A universal desktop model displayer for Live2D, Spine, MMD and VRoid.",
   "main": "./dist/main/main.cjs.js",
   "repository": {
@@ -17,7 +17,9 @@
   },
   "scripts": {
     "start": "node ./scripts/dev-runner",
-    "build": "node ./scripts/build"
+    "build": "node ./scripts/build",
+    "build:macos": "node ./scripts/build --macos",
+    "build:windows": "node ./scripts/build --windows"
   },
   "dependencies": {
     "electron-is": "^3.0.0",
