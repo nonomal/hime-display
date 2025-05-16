@@ -32,10 +32,24 @@ jobs:
           fi
         shell: bash
 
-      - name: Upload release artifact
+      - name: Package build output
+        run: |
+          mkdir release
+          cp build/*.exe release/ 2>/dev/null || true
+          cp build/*.dmg release/ 2>/dev/null || true
+          cd release && zip -r "HimeDisplay-${{ runner.os }}.zip" . && cd ..
+        shell: bash
+
+      - name: Upload as GitHub Actions artifact
         uses: actions/upload-artifact@v4
         with:
-          name: Hime Display ${{ runner.os }}
-          path: |
-            build/*.exe
-            build/*.dmg
+          name: HimeDisplay ${{ runner.os }}
+          path: release/HimeDisplay-${{ runner.os }}.zip
+
+      - name: Upload to GitHub Release (only on release)
+        if: github.event_name == 'release'
+        uses: softprops/action-gh-release@v2
+        with:
+          files: release/HimeDisplay-${{ runner.os }}.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -12,6 +12,8 @@ const options = {
   directories: {
     output: "build",
   },
+  // https://github.com/electron-userland/electron-builder/issues/5463
+  // 太脑瘫了，electron-builder在使用GitHub Actions时必须手动指定不自动执行publish过程
   publish: null,
   files: ["dist/renderer/**/*", "dist/main/**/*"],
   // asar: false,
