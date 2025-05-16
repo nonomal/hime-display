@@ -17,7 +17,9 @@
   },
   "scripts": {
     "start": "node ./scripts/dev-runner",
-    "build": "node ./scripts/build"
+    "build": "node ./scripts/build",
+    "build:macos": "node ./scripts/build --macos",
+    "build:windows": "node ./scripts/build --windows"
   },
   "dependencies": {
     "electron-is": "^3.0.0",

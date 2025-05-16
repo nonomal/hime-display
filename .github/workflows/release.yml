@@ -1,0 +1,41 @@
+name: Build App
+on:
+  workflow_dispatch:
+  release:
+    types: [published]
+
+jobs:
+  release:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [macos-latest, windows-latest]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install dependencies
+        run: yarn install
+
+      - name: Build the app
+        run: |
+          if [[ "${{ runner.os }}" == "macOS" ]]; then
+            yarn build:macos
+          elif [[ "${{ runner.os }}" == "Windows" ]]; then
+            yarn build:windows
+          fi
+        shell: bash
+
+      - name: Upload release artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Hime Display ${{ runner.os }}
+          path: |
+            build/*.exe
+            build/*.dmg

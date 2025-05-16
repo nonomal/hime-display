@@ -12,6 +12,19 @@ const {
   RENDERER_ROOT,
 } = require("./constants");
 
+const args = process.argv.slice(2);
+let targets = null;
+if (args.includes("--macos")) {
+  targets = builder.Platform.MAC.createTarget();
+} else if (args.includes("--windows")) {
+  targets = builder.Platform.WINDOWS.createTarget();
+} else {
+  targets = builder.createTargets([
+    builder.Platform.WINDOWS,
+    builder.Platform.MAC,
+  ]);
+}
+
 function build() {
   const tasks = new ListR([
     {
@@ -35,7 +48,10 @@ function build() {
   tasks
     .run()
     .then(() => {
-      builder.build(builderConfig);
+      builder.build({
+        targets,
+        config: builderConfig,
+      });
     })
     .catch((error) => {
       createLogger().error(
