@@ -4,7 +4,10 @@
  */
 const builder = require("electron-builder");
 const options = {
-  targets: builder.Platform.WINDOWS.createTarget(),
+  targets: builder.createTargets([
+    builder.Platform.WINDOWS,
+    builder.Platform.MAC,
+  ]),
   config: {
     productName: "Hime Display",
     directories: {
