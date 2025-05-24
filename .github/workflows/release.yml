@@ -58,12 +58,13 @@ jobs:
           Compress-Archive -Path release\* -DestinationPath ("release\HimeDisplay-windows-$env:VERSION.zip")
         shell: pwsh
 
-      - name: Upload as GitHub Actions artifact
+      - name: Upload build artifacts
         uses: actions/upload-artifact@v4
         with:
           name: HimeDisplay-${{ runner.os }}-${{ env.VERSION }}
           path: |
-            release/HimeDisplay-${{ runner.os }}-${{ env.VERSION }}.zip
+            build/*.dmg
+            build/*.exe
 
       - name: Upload to GitHub Release (only on release)
         if: github.event_name == 'release'
