@@ -1,0 +1,75 @@
+name: Build App
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version label (e.g. v1.2.3)"
+        required: false
+  release:
+    types: [published]
+
+jobs:
+  release:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [macos-latest, windows-latest]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install dependencies
+        run: yarn install
+
+      - name: Build the app
+        run: |
+          if [[ "${{ runner.os }}" == "macOS" ]]; then
+            yarn build:macos
+          elif [[ "${{ runner.os }}" == "Windows" ]]; then
+            yarn build:windows
+          fi
+        shell: bash
+
+      - name: Determine version
+        run: |
+          echo "VERSION=${{ github.event.release.tag_name != '' && github.event.release.tag_name || github.event.inputs.version != '' && github.event.inputs.version || 'v-dev' }}" >> $GITHUB_ENV
+        shell: bash
+
+      - name: Package build output for macOS
+        if: runner.os == 'macOS'
+        run: |
+          mkdir release
+          cp build/*.dmg release/ 2>/dev/null || true
+          cd release && zip -r "HimeDisplay-macos-${VERSION}.zip" . && cd ..
+        shell: bash
+
+      - name: Package build output for Windows
+        if: runner.os == 'Windows'
+        run: |
+          mkdir release
+          copy build\*.exe release\ 2>$null
+          Compress-Archive -Path release\* -DestinationPath ("release\HimeDisplay-windows-$env:VERSION.zip")
+        shell: pwsh
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: HimeDisplay-${{ runner.os }}-${{ env.VERSION }}
+          path: |
+            build/*.dmg
+            build/*.exe
+
+      - name: Upload to GitHub Release (only on release)
+        if: github.event_name == 'release'
+        uses: softprops/action-gh-release@v2
+        with:
+          files: release/HimeDisplay-${{ runner.os }}-${{ env.VERSION }}.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
